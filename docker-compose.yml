@@ -1,0 +1,28 @@
+# Local infra for Python portfolio (W1+)
+# Milvus full stack: prefer official standalone compose when network allows;
+# or point MILVUS_HOST to your cloud server after etcd+minio+milvus are up.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zhizhi-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: zhizhi_ai_agent
+    ports:
+      - "3306:3306"
+    volumes:
+      - zhizhi_mysql_data:/var/lib/mysql
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+
+  redis:
+    image: redis:7
+    container_name: zhizhi-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--requirepass", "root"]
+
+volumes:
+  zhizhi_mysql_data:
