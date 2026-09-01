@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>枝枝AI智能体</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/styles.css?v=w40" />
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="boot" v-if="booting">加载中…</div>
+
+      <!-- 首页：顶栏 + Hero 一屏 + 能力区紧接 -->
+      <div class="home" v-else-if="view === 'home'">
+        <header class="topnav">
+          <div class="brand">
+            <div class="brand-mark" aria-hidden="true"></div>
+            <span>枝枝AI智能体</span>
+          </div>
+          <nav class="nav-links" aria-label="主导航">
+            <button type="button" @click="enterWorkspace">工作台</button>
+            <button type="button" @click="enterWorkspace">多 Agent</button>
+            <button type="button" @click="enterKnowledge">知识库</button>
+            <button type="button" @click="enterTrace">Trace</button>
+          </nav>
+          <div class="nav-actions">
+            <button class="btn btn-primary btn-sm" @click="goAuth('login')">登录</button>
+          </div>
+        </header>
+
+        <main class="home-main">
+          <section class="hero">
+            <div class="hero-copy">
+              <p class="hero-kicker">Enterprise Agent Platform</p>
+              <h1>枝枝AI智能体</h1>
+              <p class="hero-sub">企业级 Agent 工作台</p>
+              <p class="hero-desc">
+                对话、工具调用、知识库与 Trace 一体演示。三栏结构：左侧历史、中间对话、右侧计划/产物。
+              </p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" @click="enterWorkspace">进入工作台</button>
+                <button class="btn-text" type="button" @click="goAuth('login')">登录后体验</button>
+              </div>
+            </div>
+
+            <div class="hero-visual" aria-hidden="true">
+              <div class="preview-card">
+                <div class="preview-chrome">
+                  <span></span><span></span><span></span>
+                  <strong>Agent Workspace</strong>
+                </div>
+                <div class="preview-panes">
+                  <div class="pane">
+                    <small>历史</small>
+                    <i></i><i></i><i class="short"></i>
+                  </div>
+                  <div class="pane pane-main">
+                    <small>对话</small>
+                    <i></i><i class="short"></i>
+                    <i></i><i class="short"></i>
+                    <div class="preview-tags">
+                      <span class="tag think">思考</span>
+                      <span class="tag tool">工具</span>
+                      <span class="tag art">产物</span>
+                    </div>
+                  </div>
+                  <div class="pane">
+                    <small>计划</small>
+                    <i></i><i class="short"></i><i></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="capabilities" id="capabilities">
+            <div class="section-head">
+              <h2>选择能力</h2>
+              <p>从工作台开始，后续扩展多 Agent、知识库与 Trace。</p>
+            </div>
+
+            <div class="cap-grid">
+              <button type="button" class="cap-card cap-featured" @click="enterWorkspace">
+                <div class="cap-icon featured">✦</div>
+                <div class="cap-body">
+                  <strong>Agent 工作台</strong>
+                  <span>三栏工作台：历史会话、对话/思考、计划/产物。支持 JWT 登录与 chatId 续聊。</span>
+                </div>
+                <span class="cap-enter">进入 →</span>
+              </button>
+
+              <article class="cap-card">
+                <div class="cap-icon c1">◎</div>
+                <strong>面试官小助手</strong>
+                <p>模拟面试问答与追问，后续接入工具与评测。</p>
+              </article>
+              <article class="cap-card">
+                <div class="cap-icon c2">◈</div>
+                <strong>多 Agent</strong>
+                <p>Planner → Worker 最小链路，后续周迭代。</p>
+              </article>
+              <button type="button" class="cap-card" @click="enterKnowledge">
+                <div class="cap-icon c3">▣</div>
+                <div class="cap-body">
+                  <strong>知识库</strong>
+                  <span>上传文档 / 粘贴文本、切片预览、试检索，对话中自动引用。</span>
+                </div>
+                <span class="cap-enter">进入 →</span>
+              </button>
+              <article class="cap-card" style="cursor:pointer" @click="enterTrace">
+                <div class="cap-icon c4">◉</div>
+                <div class="cap-body">
+                  <strong>Trace 可观测</strong>
+                  <span>查看单次对话/Agent 耗时与步骤，便于演示与排障。</span>
+                </div>
+                <span class="cap-enter">进入 →</span>
+              </article>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <!-- 登录 / 注册 -->
+      <section class="auth-page" v-else-if="view === 'login' || view === 'register'">
+        <div class="auth-card">
+          <div class="auth-brand">枝枝AI智能体</div>
+          <h1>{{ view === 'login' ? '登录' : '注册' }}</h1>
+          <p class="sub">
+            {{
+              view === 'login'
+                ? '登录后可同步历史会话，并保护你的对话数据'
+                : '注册后即可进入工作台，数据按用户隔离'
+            }}
+          </p>
+          <form class="auth-form" @submit.prevent="submitAuth">
+            <label>
+              用户名
+              <input
+                v-model="authForm.username"
+                placeholder="3-32 位字母数字下划线"
+                pattern="[A-Za-z0-9_]{3,32}"
+                autocomplete="username"
+                required
+              />
+            </label>
+            <label v-if="view === 'register'">
+              昵称（可选）
+              <input v-model="authForm.nickname" placeholder="展示名称" autocomplete="nickname" />
+            </label>
+            <label>
+              密码
+              <input
+                v-model="authForm.password"
+                type="password"
+                placeholder="至少 6 位"
+                minlength="6"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+            <button class="btn btn-primary" type="submit" :disabled="authLoading">
+              {{ authLoading ? '提交中…' : view === 'login' ? '登录' : '注册并进入' }}
+            </button>
+          </form>
+          <div class="auth-footer">
+            <button
+              v-if="registerEnabled"
+              type="button"
+              @click="view = view === 'login' ? 'register' : 'login'"
+            >
+              {{ view === 'login' ? '没有账号？去注册' : '已有账号？去登录' }}
+            </button>
+            <button type="button" @click="view = 'home'">返回首页</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trace 页 -->
+      <section class="kb-page" v-else-if="view === 'trace'">
+        <header class="kb-top">
+          <button class="btn btn-outline btn-sm" type="button" @click="view = 'home'">← 返回</button>
+          <div class="kb-title-block">
+            <h1>Trace</h1>
+            <p>单次请求耗时与步骤，便于演示可观测能力</p>
+          </div>
+          <button class="btn btn-outline btn-sm" type="button" @click="loadTraces">刷新</button>
+        </header>
+        <div class="kb-layout">
+          <aside class="kb-side">
+            <section class="kb-card">
+              <h2>最近 Trace</h2>
+              <ul class="kb-doc-list" v-if="traces.length">
+                <li v-for="t in traces" :key="t.id" @click="selectTrace(t.trace_id)" style="cursor:pointer">
+                  <div>
+                    <strong>{{ t.name }}</strong>
+                    <small>{{ t.duration_ms ?? '-' }} ms · {{ t.status }} · {{ formatTime(t.started_at) }}</small>
+                  </div>
+                </li>
+              </ul>
+              <p class="kb-empty" v-else>暂无 Trace。先发一条对话或多步运行。</p>
+            </section>
+          </aside>
+          <main class="kb-preview">
+            <div class="kb-preview-head">
+              <h2>步骤明细</h2>
+              <span v-if="traceDetail.length">{{ traceDetail.length }} spans</span>
+            </div>
+            <div class="kb-preview-empty" v-if="!traceDetail.length">选择左侧一条 Trace 查看步骤。</div>
+            <ol class="kb-chunk-list" v-else>
+              <li v-for="s in traceDetail" :key="s.id">
+                <header>
+                  <span>{{ s.kind }} · {{ s.name }}</span>
+                  <em>{{ s.duration_ms ?? '-' }} ms · {{ s.status }}</em>
+                </header>
+                <pre>{{ formatJson(s.meta) }}</pre>
+              </li>
+            </ol>
+          </main>
+        </div>
+      </section>
+
+      <!-- 知识库独立页 -->
+      <section class="kb-page" v-else-if="view === 'knowledge'">
+        <header class="kb-top">
+          <button class="btn btn-outline btn-sm" type="button" @click="view = 'home'">← 返回</button>
+          <div class="kb-title-block">
+            <h1>知识库</h1>
+            <p>选文件或粘贴文本 → 调参预览 → 确认入库 → 对话中引用</p>
+          </div>
+          <button class="btn btn-outline btn-sm" type="button" :disabled="kbLoading" @click="refreshKnowledge">
+            刷新
+          </button>
+        </header>
+
+        <div class="kb-layout">
+          <aside class="kb-side">
+            <section class="kb-card">
+              <h2><span class="step">1</span> 上传 / 粘贴</h2>
+              <div class="kb-source-tabs">
+                <button type="button" :class="{ active: kbSource === 'paste' }" @click="kbSource = 'paste'">粘贴文本</button>
+                <button type="button" :class="{ active: kbSource === 'file' }" @click="kbSource = 'file'">上传文件</button>
+              </div>
+
+              <template v-if="kbSource === 'paste'">
+                <label class="kb-field">
+                  标题（可选）
+                  <input v-model="kbFilename" placeholder="例如：青甘大环线攻略.txt" />
+                </label>
+                <label class="kb-field">
+                  文本内容
+                  <textarea
+                    v-model="kbText"
+                    rows="8"
+                    placeholder="把文档内容粘贴到这里…"
+                  ></textarea>
+                </label>
+              </template>
+              <template v-else>
+                <label
+                  class="kb-drop"
+                  @dragover.prevent
+                  @drop.prevent="onKbFileDrop"
+                >
+                  <input
+                    type="file"
+                    accept=".txt,.md,.csv,.json,.markdown,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    hidden
+                    @change="onKbFilePick"
+                  />
+                  <strong v-if="kbFileName">{{ kbFileName }}</strong>
+                  <template v-else>
+                    <strong>拖拽文件到此处，或点击选择</strong>
+                    <span>支持 .md / .txt / .pdf / .docx 等，≤10MB</span>
+                  </template>
+                </label>
+                <label class="kb-field">
+                  标题（可选，默认用文件名）
+                  <input v-model="kbFilename" placeholder="留空则使用文件名" />
+                </label>
+              </template>
+
+              <div class="kb-strategy">
+                <label class="kb-field">
+                  分割策略
+                  <select v-model="kbStrategy" @change="onKbStrategyChange">
+                    <option v-for="s in kbStrategies" :key="s.id" :value="s.id">
+                      {{ s.name }}{{ s.badge ? '（' + s.badge + '）' : '' }}
+                    </option>
+                  </select>
+                </label>
+                <p class="kb-strategy-desc" v-if="kbCurrentStrategy">
+                  {{ kbCurrentStrategy.summary }}
+                  <span v-if="kbCurrentStrategy.suitable">适合：{{ kbCurrentStrategy.suitable }}</span>
+                </p>
+              </div>
+
+              <div class="kb-params" v-if="kbCurrentStrategy && kbCurrentStrategy.params">
+                <label v-for="p in kbCurrentStrategy.params" :key="p.key">
+                  {{ p.label }}
+                  <input
+                    type="number"
+                    v-model.number="kbParams[p.key]"
+                    :min="p.min"
+                    :max="p.max"
+                    :step="p.step || 1"
+                  />
+                  <small v-if="p.hint">{{ p.hint }}</small>
+                </label>
+              </div>
+
+              <div class="kb-actions">
+                <button class="btn btn-outline btn-sm" type="button" :disabled="kbLoading" @click="previewKb">
+                  重新预览
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" :disabled="kbLoading" @click="confirmKbIngest">
+                  {{ kbLoading ? '处理中…' : '确认入库' }}
+                </button>
+              </div>
+            </section>
+
+            <section class="kb-card">
+              <h2><span class="step">2</span> 文档</h2>
+              <ul class="kb-doc-list" v-if="kbDocs.length">
+                <li v-for="d in kbDocs" :key="d.id">
+                  <div>
+                    <strong>{{ d.filename }}</strong>
+                    <small>{{ d.char_count }} 字 · {{ d.chunk_count }} 切片 · {{ formatTime(d.create_date) }}</small>
+                  </div>
+                  <div class="kb-doc-actions">
+                    <button type="button" class="linkish" @click="viewKbChunks(d)">切片</button>
+                    <button type="button" class="del" @click="deleteKb(d.id)">删</button>
+                  </div>
+                </li>
+              </ul>
+              <p class="kb-empty" v-else>暂无文档，先上传或粘贴文本入库。</p>
+            </section>
+
+            <section class="kb-card">
+              <h2><span class="step">3</span> 试检索</h2>
+              <label class="kb-field">
+                <input v-model="kbSearchQuery" placeholder="例如：文档里提到的 MCP 是什么？" @keydown.enter.prevent="runKbSearch" />
+              </label>
+              <button class="btn btn-primary btn-sm" type="button" :disabled="kbSearching" @click="runKbSearch">
+                {{ kbSearching ? '检索中…' : '检索' }}
+              </button>
+              <ul class="kb-hit-list" v-if="kbHits.length">
+                <li v-for="(h, i) in kbHits" :key="i">
+                  <div class="kb-hit-meta">
+                    <strong>{{ h.filename }}</strong>
+                    <em>score {{ h.score }} · #{{ h.chunk_index }}</em>
+                  </div>
+                  <p>{{ h.text }}</p>
+                </li>
+              </ul>
+            </section>
+          </aside>
+
+          <main class="kb-preview">
+            <div class="kb-preview-head">
+              <h2>切片预览</h2>
+              <span v-if="kbPreview.chunk_count">{{ kbPreview.chunk_count }} 片 · {{ kbPreview.char_count }} 字</span>
+            </div>
+            <div class="kb-preview-empty" v-if="!kbPreview.chunks || !kbPreview.chunks.length">
+              选择文件或粘贴文本并调参后点「重新预览」；也可在文档列表点「切片」查看已入库片段。
+            </div>
+            <ol class="kb-chunk-list" v-else>
+              <li v-for="c in kbPreview.chunks" :key="c.index">
+                <header>
+                  <span>#{{ c.index }}</span>
+                  <em>{{ c.chars }} 字</em>
+                </header>
+                <pre>{{ c.text }}</pre>
+              </li>
+            </ol>
+          </main>
+        </div>
+      </section>
+
+      <!-- 工作台：满屏三栏 -->
+      <section class="workspace-page" v-else-if="view === 'workspace'">
+        <div class="workspace-shell">
+          <aside class="col col-left">
+            <div class="panel-head">
+              <h3>历史会话</h3>
+              <button class="btn btn-outline btn-sm" :disabled="loading" @click="createChat">
+                ＋ 新对话
+              </button>
+            </div>
+            <ul class="history-list">
+              <li v-for="c in conversations" :key="c.chat_id">
+                <div
+                  class="history-item"
+                  :class="{ active: c.chat_id === chatId }"
+                  @click="selectChat(c.chat_id)"
+                >
+                  <div>
+                    <div class="title">{{ c.title }}</div>
+                    <div class="meta">{{ formatTime(c.update_date) }}</div>
+                  </div>
+                  <button class="del" title="删除" @click.stop="removeChat(c.chat_id)">×</button>
+                </div>
+              </li>
+            </ul>
+          </aside>
+
+          <main class="col col-center">
+            <div class="center-top">
+              <button class="back" type="button" @click="view = 'home'">← 返回</button>
+              <div class="title-block">
+                <strong><span>✦</span> Agent Workspace</strong>
+                <span class="sid">{{ chatId ? '会话 ' + chatId.slice(0, 8) + '…' : '未选择会话' }}</span>
+              </div>
+              <button class="btn btn-outline btn-sm" type="button" @click="logout">退出</button>
+            </div>
+
+            <div class="messages">
+              <div class="empty-state" v-if="!messages.length">
+                <div class="big-icon">✦</div>
+                <strong>左侧历史 · 中间对话 · 右侧计划/产物</strong>
+                描述任务后发送；开启 RAG 时回答末尾带文档引用。
+              </div>
+              <div
+                v-for="m in messages"
+                :key="m.id"
+                class="bubble"
+                :class="m.role"
+              >
+                <span class="role">{{ m.role }}</span>
+                <div class="bubble-text">
+                  <span v-if="m.streaming && !m.content && m.statusHint" class="stream-hint">{{ m.statusHint }}</span>
+                  <template v-else>{{ displayContent(m.content) }}</template>
+                  <span v-if="m.streaming" class="cursor-blink" aria-hidden="true"></span>
+                </div>
+                <ul class="cite-list" v-if="!m.streaming && parseCitations(m.content).length">
+                  <li v-for="(c, i) in parseCitations(m.content)" :key="i">
+                    来自 <strong>{{ c.filename || '文档' }}</strong>
+                    <span v-if="c.score != null"> · score {{ c.score }}</span>
+                    <span class="cite-snip" v-if="c.snippet"> — {{ c.snippet }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="composer-wrap">
+              <form class="composer" @submit.prevent="sendMessage">
+                <textarea
+                  v-model="draft"
+                  rows="3"
+                  placeholder="描述任务后点「多步运行」才会调工具生成 PDF；「发送」只是普通对话…"
+                  :disabled="loading || agentRunning"
+                  @keydown="onKeydown"
+                ></textarea>
+                <div class="composer-bar">
+                  <span class="model-pill">千问</span>
+                  <div class="composer-actions">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      type="button"
+                      :disabled="loading || agentRunning || !draft.trim()"
+                      @click="runAgent"
+                    >
+                      多步运行
+                    </button>
+                    <button
+                      class="btn btn-outline btn-sm"
+                      type="button"
+                      :disabled="loading || agentRunning || !draft.trim()"
+                      @click="runMultiAgent"
+                      title="Planner → Worker"
+                    >
+                      多 Agent
+                    </button>
+                    <button
+                      v-if="agentRunning"
+                      class="btn btn-stop btn-sm"
+                      type="button"
+                      @click="stopAgent"
+                    >
+                      停止
+                    </button>
+                    <button
+                      class="send-btn"
+                      type="submit"
+                      :disabled="loading || agentRunning || !draft.trim()"
+                      title="发送"
+                    >
+                      ↑
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <div class="ai-note">内容由 AI 生成，请仔细斟酌</div>
+            </div>
+          </main>
+
+          <aside class="col col-right">
+            <div class="right-tabs">
+              <button type="button" :class="{ active: rightTab === 'think' }" @click="setRightTab('think')">思考</button>
+              <button type="button" :class="{ active: rightTab === 'tool' }" @click="setRightTab('tool')">工具</button>
+              <button type="button" :class="{ active: rightTab === 'answer' }" @click="setRightTab('answer')">回答</button>
+              <button type="button" :class="{ active: rightTab === 'artifact' }" @click="setRightTab('artifact')">产物</button>
+            </div>
+            <div class="right-body">
+              <div v-if="hitlPending" class="hitl-card">
+                <strong>HITL 待确认</strong>
+                <p>工具：{{ hitlPending.tool_name }}</p>
+                <small>{{ hitlPending.args_preview }}</small>
+                <div class="hitl-actions">
+                  <button class="btn btn-primary btn-sm" type="button" @click="decideHitl('approve')">批准</button>
+                  <button class="btn btn-stop btn-sm" type="button" @click="decideHitl('reject')">拒绝</button>
+                </div>
+              </div>
+
+              <div v-if="rightTab === 'think'" class="zone-panel">
+                <div v-if="!getThinkLogs().length" class="plan-empty">
+                  发送消息或多步运行后，这里会显示检索 / 规划过程。
+                </div>
+                <ul class="zone-log" v-else>
+                  <li v-for="(l, i) in getThinkLogs()" :key="'t'+i">
+                    <strong>{{ l.title }}</strong>
+                    <p>{{ l.detail }}</p>
+                  </li>
+                </ul>
+              </div>
+
+              <div v-else-if="rightTab === 'tool'" class="zone-panel">
+                <div v-if="!getToolLogs().length" class="plan-empty">
+                  多步运行调用工具后，这里显示工具入参与结果。
+                </div>
+                <ul class="zone-log" v-else>
+                  <li v-for="(l, i) in getToolLogs()" :key="'o'+i">
+                    <strong>{{ l.title }}</strong>
+                    <p>{{ l.detail }}</p>
+                  </li>
+                </ul>
+              </div>
+
+              <div v-else-if="rightTab === 'answer'" class="zone-panel">
+                <div v-if="getAnswerLogs().length" class="zone-log-wrap">
+                  <ul class="zone-log">
+                    <li v-for="(l, i) in getAnswerLogs()" :key="'a'+i">
+                      <strong>{{ l.title }}</strong>
+                      <p>{{ l.detail }}</p>
+                    </li>
+                  </ul>
+                </div>
+                <div v-else-if="latestAssistantText()" class="zone-log-wrap">
+                  <ul class="zone-log">
+                    <li>
+                      <strong>当前回答</strong>
+                      <p>{{ latestAssistantText() }}</p>
+                    </li>
+                  </ul>
+                </div>
+                <div v-else class="plan-empty">回答摘要会显示在这里。</div>
+              </div>
+
+              <div v-else class="zone-panel">
+                <div v-if="!artifacts.length" class="plan-empty">
+                  暂无产物。多步运行写文件/PDF 后出现在此。
+                  <button type="button" class="linkish" @click="enterKnowledge">管理知识库 →</button>
+                </div>
+                <ul class="artifact-list" v-else>
+                  <li v-for="a in artifacts" :key="a.id">
+                    <div>
+                      <strong>{{ a.filename }}</strong>
+                      <small>{{ a.byte_size }} bytes · {{ formatTime(a.create_date) }}</small>
+                    </div>
+                    <a class="btn btn-outline btn-sm" href="#" @click.prevent="downloadArtifact(a)">下载</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div class="toast" v-if="error">{{ error }}</div>
+    </div>
+
+    <script src="/assets/app.js?v=w40"></script>
+  </body>
+</html>

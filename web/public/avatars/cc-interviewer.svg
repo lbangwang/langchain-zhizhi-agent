@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none">
+  <defs>
+    <linearGradient id="ccBg" x1="12" y1="8" x2="88" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8F4F1"/>
+      <stop offset="1" stop-color="#D3EBE4"/>
+    </linearGradient>
+    <linearGradient id="ccAccent" x1="28" y1="22" x2="72" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2F7A6B"/>
+      <stop offset="1" stop-color="#1F5C50"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="28" fill="url(#ccBg)"/>
+  <!-- head -->
+  <circle cx="48" cy="34" r="15" fill="url(#ccAccent)"/>
+  <!-- shoulders -->
+  <path d="M22 78c4.2-13.5 13.5-21 26-21s21.8 7.5 26 21" stroke="url(#ccAccent)" stroke-width="10" stroke-linecap="round"/>
+  <!-- headset -->
+  <path d="M30 34c0-10 8-18 18-18s18 8 18 18" stroke="#1F5C50" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <rect x="26" y="32" width="7" height="12" rx="3.5" fill="#1F5C50"/>
+  <rect x="63" y="32" width="7" height="12" rx="3.5" fill="#1F5C50"/>
+  <path d="M29.5 44v6c0 2.2 1.8 4 4 4H40" stroke="#1F5C50" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- badge CC -->
+  <circle cx="70" cy="68" r="14" fill="#FFFFFF" stroke="#2F7A6B" stroke-width="2"/>
+  <text x="70" y="73" text-anchor="middle" font-family="Avenir Next, Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#2F7A6B">CC</text>
+</svg>

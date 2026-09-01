@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none">
+  <defs>
+    <linearGradient id="saBg" x1="12" y1="8" x2="86" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E4F1F5"/>
+      <stop offset="1" stop-color="#CFE3EC"/>
+    </linearGradient>
+    <linearGradient id="saBody" x1="30" y1="24" x2="66" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F6F8B"/>
+      <stop offset="1" stop-color="#164F63"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="28" fill="url(#saBg)"/>
+  <!-- antenna -->
+  <rect x="45" y="14" width="6" height="12" rx="3" fill="#1F6F8B"/>
+  <circle cx="48" cy="12" r="4" fill="#5FA8C0"/>
+  <!-- robot head -->
+  <rect x="26" y="28" width="44" height="36" rx="14" fill="url(#saBody)"/>
+  <circle cx="38" cy="43" r="4.5" fill="#E8EEF3"/>
+  <circle cx="58" cy="43" r="4.5" fill="#E8EEF3"/>
+  <path d="M38 54c2.5 3 7.5 4.5 10 4.5s7.5-1.5 10-4.5" stroke="#B7D7E3" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- tool arms -->
+  <path d="M26 42h-8" stroke="#1F6F8B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M70 42h8" stroke="#1F6F8B" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="16" cy="42" r="4" fill="#5FA8C0"/>
+  <circle cx="80" cy="42" r="4" fill="#2F7A6B"/>
+  <!-- gear hint -->
+  <circle cx="48" cy="78" r="7" stroke="#1F6F8B" stroke-width="2.5" fill="none"/>
+  <circle cx="48" cy="78" r="2.5" fill="#1F6F8B"/>
+</svg>

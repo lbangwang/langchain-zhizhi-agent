@@ -1,11 +1,19 @@
+# 密钥与本地配置（只提交 .env.example）
 .env
+.env.*
+!.env.example
+
 .venv/
 __pycache__/
 *.pyc
 .DS_Store
 .idea/
+.cursor/
 data/
 *.log
 .langsmith/
-**/.env
-!.env.example
+
+# Redis 快照、产物
+dump.rdb
+*.rdb
+data/artifacts/

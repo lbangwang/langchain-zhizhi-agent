@@ -1,6 +1,7 @@
 # Local infra for Python portfolio (W1+)
-# Milvus full stack: prefer official standalone compose when network allows;
-# or point MILVUS_HOST to your cloud server after etcd+minio+milvus are up.
+# 启动：docker compose up -d
+# 说明：本机若已有 MySQL/Redis，可只起缺失的服务，或改用本机进程。
+# Milvus full stack：官方 standalone compose，或 MILVUS_HOST 指向云服务器。
 
 services:
   mysql:
@@ -15,6 +16,11 @@ services:
     volumes:
       - zhizhi_mysql_data:/var/lib/mysql
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   redis:
     image: redis:7
@@ -22,7 +28,13 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    # 与 .env.example 默认 REDIS_PASSWORD=root 对齐
     command: ["redis-server", "--requirepass", "root"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "root", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
 volumes:
   zhizhi_mysql_data:

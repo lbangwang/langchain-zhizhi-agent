@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none">
+  <defs>
+    <linearGradient id="maBg" x1="10" y1="8" x2="88" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8F0F8"/>
+      <stop offset="1" stop-color="#D8E6F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="28" fill="url(#maBg)"/>
+  <!-- link -->
+  <path d="M34 40h28" stroke="#1F6F8B" stroke-width="3" stroke-linecap="round"/>
+  <path d="M48 40v16" stroke="#5FA8C0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Planner node -->
+  <circle cx="28" cy="40" r="14" fill="#1F6F8B"/>
+  <path d="M22 38h12M22 43h8" stroke="#E8EEF3" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Worker node -->
+  <circle cx="68" cy="40" r="14" fill="#2F7A6B"/>
+  <rect x="61" y="35" width="14" height="10" rx="3" fill="#E8EEF3"/>
+  <circle cx="65" cy="40" r="1.6" fill="#2F7A6B"/>
+  <circle cx="71" cy="40" r="1.6" fill="#2F7A6B"/>
+  <!-- result node -->
+  <circle cx="48" cy="68" r="10" fill="#5FA8C0"/>
+  <path d="M44 68l3 3 6-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

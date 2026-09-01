@@ -1,0 +1,102 @@
+# 本机 Docker 演练专用：宿主机端口 / 容器名 / 数据卷全部错开，
+# 不和手动 uvicorn(:8124)、本机 MySQL(:3306)、Redis(:6379)、
+# 以及 docker-compose.yml 里的 zhizhi-mysql 冲突。
+#
+# 启动：bash scripts/docker-local.sh up
+# 访问：http://127.0.0.1:8125/
+#
+# 容器内部端口不变（mysql=3306, redis=6379, app=8124），
+# 只有映射到 Mac 上的端口改了。
+# 基础镜像走 DaoCloud 前缀，避免直连 docker.io 超时。
+
+name: zhizhi-local
+
+services:
+  mysql:
+    image: docker.m.daocloud.io/library/mysql:8.0
+    container_name: zhizhi-local-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zhizhi_ai_agent}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - zhizhi_local_mysql_data:/var/lib/mysql
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  redis:
+    image: docker.m.daocloud.io/library/redis:7
+    container_name: zhizhi-local-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6380:6379"
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-root}"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-root}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_IMAGE: docker.m.daocloud.io/library/node:22-alpine
+        PYTHON_IMAGE: docker.m.daocloud.io/library/python:3.12-slim
+    image: zhizhi-ai-agent:local
+    container_name: zhizhi-local-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+      MYSQL_ENABLED: "true"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      MCP_IMAGE_SEARCH_URL: http://127.0.0.1:8765/search
+      ARTIFACTS_DIR: /app/data/artifacts
+      REGISTER_ENABLED: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:8125:8124"
+    volumes:
+      - zhizhi_local_artifacts:/app/data
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "30m"
+        max-file: "5"
+
+volumes:
+  zhizhi_local_mysql_data:
+  zhizhi_local_artifacts:

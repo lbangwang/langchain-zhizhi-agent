@@ -1,0 +1,22 @@
+[
+  {"id": "e01", "prompt": "用一句话介绍枝枝 AI Agent。", "expect_keywords": ["Agent", "助手"]},
+  {"id": "e02", "prompt": "Milvus 在本项目里做什么？一句话。", "expect_keywords": ["向量", "检索", "知识"]},
+  {"id": "e03", "prompt": "什么是 RAG？一句话。", "expect_keywords": ["检索", "生成"]},
+  {"id": "e04", "prompt": "__CITATIONS__ 标记有什么用？", "expect_keywords": ["引用", "文档"]},
+  {"id": "e05", "prompt": "JWT 登录失败常见原因？", "expect_keywords": ["token", "登录", "鉴权"]},
+  {"id": "e06", "prompt": "Redis 停止信号如何工作？", "expect_keywords": ["停止", "Redis"]},
+  {"id": "e07", "prompt": "create_pdf_report 工具做什么？", "expect_keywords": ["PDF", "报告"]},
+  {"id": "e08", "prompt": "HITL 是什么意思？", "expect_keywords": ["人工", "确认", "批准"]},
+  {"id": "e09", "prompt": "RecursiveCharacterTextSplitter 适合什么场景？", "expect_keywords": ["切分", "文本", "段落"]},
+  {"id": "e10", "prompt": "MCP 图片搜索能返回什么？", "expect_keywords": ["图片", "链接", "搜索"]},
+  {"id": "e11", "prompt": "Skill 包在本项目放在哪个目录？", "expect_keywords": ["skills"]},
+  {"id": "e12", "prompt": "对话流式输出用什么协议？", "expect_keywords": ["SSE", "流"]},
+  {"id": "e13", "prompt": "查询改写对检索有什么帮助？", "expect_keywords": ["检索", "改写"]},
+  {"id": "e14", "prompt": "Rerank 的作用？", "expect_keywords": ["重排", "相关"]},
+  {"id": "e15", "prompt": "产物下载接口路径大概是什么？", "expect_keywords": ["artifacts", "download"]},
+  {"id": "e16", "prompt": "短记忆压缩解决什么问题？", "expect_keywords": ["摘要", "上下文", "长对话"]},
+  {"id": "e17", "prompt": "Trace 主要记录什么？", "expect_keywords": ["耗时", "步骤"]},
+  {"id": "e18", "prompt": "知识库上传支持哪些格式？", "expect_keywords": ["pdf", "docx", "txt"]},
+  {"id": "e19", "prompt": "危险工具执行前为什么要审批？", "expect_keywords": ["安全", "批准", "危险"]},
+  {"id": "e20", "prompt": "FastAPI 健康检查路径是什么？", "expect_keywords": ["health"]}
+]
