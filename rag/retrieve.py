@@ -137,22 +137,26 @@ def retrieve(
 
     debug: dict = {"query": query, "rewritten": None, "mode": "dense"}
 
-    # 基线：原 query dense
+    # 基线：原 query dense：把问题变成向量，在 Milvus 里找最相似的文档块；先召回8条
     baseline = search_dense(query, user_id=user_id, top_k=max(k, 8))
 
     ranked_lists = [baseline]
     if do_rewrite:
+        #用户问题改写，把用户的语句改写成适合大模型的语句
         rewritten = rewrite_query(query)
         debug["rewritten"] = rewritten
         if rewritten.strip() and rewritten.strip() != query.strip():
+            #将改写前和改写后检索到文档存入变量中ranked_lists
             ranked_lists.append(
                 search_dense(rewritten, user_id=user_id, top_k=max(k, 8))
             )
             debug["mode"] = "rewrite+rrf"
 
+    #合并两个查询出来的片段（两路排名靠前、综合分数较高、相同ID去最高的）
     fused = _rrf_fuse(ranked_lists, top_k=max(k, 8)) if len(ranked_lists) > 1 else baseline
 
     if do_rerank and fused:
+        #精排：让 LLM 按与问题相关性重排候选片段
         fused = llm_rerank(query, fused, top_k=k)
         debug["mode"] = (debug["mode"] + "+rerank").replace("dense+rerank", "dense+rerank")
     else:

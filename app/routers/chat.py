@@ -238,6 +238,7 @@ def chat_stream(
         raise HTTPException(status_code=404, detail="会话不存在")
 
     try:
+        #llm_messages：当前回话的历史消息
         user_msg, llm_messages = _save_user_turn(
             db=db, conv=conv, content=content, user_id=user_id
         )
