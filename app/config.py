@@ -92,6 +92,10 @@ class Settings(BaseSettings):
     rag_top_k: int = 4
     rag_use_rewrite: bool = True
     rag_use_rerank: bool = True
+    rerank_model: str = "BAAI/bge-reranker-v2-m3"
+    rag_rerank_backend: str = "bge"  # bge | llm | off
+    #相似值
+    rag_score:float= 0.7
 
     # --- Tools / 产物 ---
     tavily_api_key: str = ""

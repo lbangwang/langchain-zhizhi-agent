@@ -10,6 +10,7 @@ from collections import defaultdict
 from app.config import get_settings
 from app.langsmith_setup import traced
 from app.llm import chat_completion
+from rag.rerank import bge_rerank
 from rag.store import RetrievedChunk, search_dense
 
 
@@ -156,9 +157,15 @@ def retrieve(
     fused = _rrf_fuse(ranked_lists, top_k=max(k, 8)) if len(ranked_lists) > 1 else baseline
 
     if do_rerank and fused:
-        #精排：让 LLM 按与问题相关性重排候选片段
-        fused = llm_rerank(query, fused, top_k=k)
-        debug["mode"] = (debug["mode"] + "+rerank").replace("dense+rerank", "dense+rerank")
+        backend = (settings.rag_rerank_backend or "bge").lower()
+        if backend == "bge":
+            #精排模型
+            fused = bge_rerank(query, fused, top_k=k)
+            debug["mode"] = f"{debug['mode']}+bge_rerank"
+        elif backend == "llm":
+            # 精排：让 LLM 按与问题相关性重排候选片段
+            fused = llm_rerank(query, fused, top_k=k)
+            debug["mode"] = f"{debug['mode']}+llm_rerank"
     else:
         fused = fused[:k]
 
