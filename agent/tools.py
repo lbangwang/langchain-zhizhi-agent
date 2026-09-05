@@ -418,7 +418,31 @@ def search_images(query: str) -> str:
         return msg
 
 
+@tool
+def load_skill(skill_id: str) -> str:
+    """功能：按目录索引中的 skill_id 加载完整 Skill 流程说明（按需，省 system token）。
+
+    技术点：委托 skills_loader.load_skill_body；检索类不走 HITL；未知 id 提示可选列表。
+    """
+    chat_id = current_chat_id.get()
+    if chat_id and is_stopped(chat_id):
+        return "任务已停止，跳过加载 Skill"
+    from agent.skills_loader import list_skill_ids, load_skill_body
+
+    sid = (skill_id or "").strip()
+    body = load_skill_body(sid)
+    if not body:
+        known = ", ".join(list_skill_ids()) or "（当前无已安装 Skill）"
+        out = f"未知 skill_id={sid!r}。可选：{known}"
+        _audit("load_skill", sid, out, status="error")
+        return out
+    out = f"# Skill `{sid}`\n\n{body}"
+    _audit("load_skill", sid, out[:500])
+    return out
+
+
 CORE_TOOLS = [
+    load_skill,
     search_web,
     write_text_file,
     create_pdf_report,

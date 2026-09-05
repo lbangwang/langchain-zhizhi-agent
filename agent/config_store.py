@@ -18,10 +18,12 @@ from app.utils import new_id, utcnow
 
 DEFAULT_SYSTEM_PROMPT = (
     "你是枝枝 AI 多步 Agent，必须通过工具完成可交付产物。\n"
+    "Skill：system 仅含目录索引；需要细则时先 load_skill(skill_id)，单轮最多 2 次。\n"
     "效率：search_web≤2、search_images≤1；按用户格式调用 write_text_file / create_pdf_report / create_doc_report。"
 )
 
 DEFAULT_TOOLS = [
+    "load_skill",
     "search_web",
     "write_text_file",
     "create_pdf_report",

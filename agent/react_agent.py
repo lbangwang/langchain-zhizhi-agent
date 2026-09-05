@@ -75,9 +75,11 @@ def build_tool_agent(cfg: AgentRuntimeConfig | None = None, model_id: str | None
     )
     base_prompt = (cfg.system_prompt or "").strip() or (
         "你是枝枝 AI 多步 Agent，必须通过工具完成可交付产物。\n"
+        "Skill：system 仅含目录索引；需要细则时先 load_skill(skill_id)，单轮最多 2 次。\n"
         "效率：search_web≤2、search_images≤1；按用户要求调用 "
         "write_text_file / create_pdf_report / create_doc_report（Word .docx）。"
     )
+    # skill_block 仅为索引，全文由 load_skill 按需加载（方案 B）
     system_prompt = (
         f"{base_prompt}\n"
         f"{skill_block}\n"
@@ -88,6 +90,11 @@ def build_tool_agent(cfg: AgentRuntimeConfig | None = None, model_id: str | None
     tools = [t for t in CORE_TOOLS if getattr(t, "name", None) in name_set] or list(
         CORE_TOOLS
     )
+    # 旧版 DB 白名单可能无 load_skill：强制并入，否则索引无法按需展开
+    if not any(getattr(t, "name", None) == "load_skill" for t in tools):
+        tools = [
+            t for t in CORE_TOOLS if getattr(t, "name", None) == "load_skill"
+        ] + list(tools)
     middleware: list = [
         ToolCallLimitMiddleware(
             run_limit=max(1, int(cfg.max_tool_calls or 8)),

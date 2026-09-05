@@ -153,13 +153,36 @@ def test_summarize_and_trim_keeps_recent(monkeypatch):
     assert dialog[-1]["content"] == "f"
 
 
-def test_skills_loader_finds_two_packs():
-    from agent.skills_loader import load_skill_texts, skills_system_block
+def test_skills_loader_index_and_ondemand_body():
+    """方案 B：system 只有索引；正文经 load_skill_body 按需读取。"""
+    from agent.skills_loader import (
+        build_skill_index,
+        clear_skill_index_cache,
+        load_skill_body,
+        load_skill_texts,
+        skills_system_block,
+    )
 
+    clear_skill_index_cache()
     texts = load_skill_texts()
     assert len(texts) >= 2
+
+    idxs = build_skill_index()
+    assert len(idxs) >= 2
+    ids = {s.id for s in idxs}
+    assert "web-research" in ids
+    assert "report-writer" in ids
+
     block = skills_system_block()
-    assert "Skill" in block or "web-research" in block or "report" in block.lower()
+    assert "目录索引" in block or "load_skill" in block
+    assert "web-research" in block
+    # 索引不应灌入大段流程细则（省 token）
+    assert "流程建议" not in block
+
+    body = load_skill_body("report-writer")
+    assert body is not None
+    assert "create_pdf_report" in body or "write_text_file" in body
+    assert load_skill_body("not-exist-skill-xyz") is None
 
 
 def test_basic_eval_cases_count():
